@@ -20,7 +20,7 @@ def pre_process(path):
 
     # define set of unnecessary characters
     __chars_to_remove = ['.', ',', ';', ':', '!', '?', '$', '%', '*', '#', '<', '>', '(', ')', '[', ']', '{', '}']
-    __chars_to_remove.extend(['/', '\\' '\'', '"', '-', '_', '|', '&', '^', '\n'])
+    __chars_to_remove.extend(['/', '\\' '\'', '"', '-', '_', '|', '&', '^', '\n', '=', '~'])
 
     # remove unnecessary characters
     __text = __text.translate(None, ''.join(__chars_to_remove))
