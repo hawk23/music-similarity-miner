@@ -36,4 +36,6 @@ def alternative_tf_idf(f_dt, N, f_t):
     tf_idf = (math.log(1 + f_dt)) * math.log((N - f_t) / f_t)
     return tf_idf
 
+print standard_tf_idf(100, 1000, 200)
+print alternative_tf_idf(100, 1000, 200)
 
