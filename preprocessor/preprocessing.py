@@ -15,19 +15,21 @@ import re
     # txtFile.close()
 
 # just for testing
-text = "<html><body>TEST testing tester tests are, will Hello world...artist Nice!!</title><h1>new</h1></body></html>"
+text = "<html><body>TEST testing tests are, will Hello world...artist Nice!!</title><h1>new</h1></body></html>"
 
 # remove html and xml tags
 text = re.sub("<.*?>", " ", text)
 
 # remove unnecessary characters
 chars_to_remove = ['.', ',', ';', ':', '!', '?', '$', '%', '*', '#', '<', '>', '(', ')', '[', ']', '{', '}', '/', '\\']
-chars_to_remove.extend(['\'', '"', '-', '_'])
+chars_to_remove.extend(['\'', '"', '-', '_', '|', '&', '^'])
 
 text = text.translate(None, ''.join(chars_to_remove))
+
+# convert text to lower letters
 text = text.lower()
 
-# bag of word
+# build bag of words
 wordArray = text.split(" ")
 
 # stopping
@@ -36,19 +38,24 @@ stopWords.extend(["is", "it", "la", "of", "on", "or", "that", "the", "this", "to
 stopWords.extend(["who", "will", "with", "und", "the", "www"])
 
 i = 0
-j = 0
 while i < len(wordArray):
     # remove empty words
     if wordArray[i] == "":
         wordArray.pop(i)
+    # check for stop words
     else:
+        j = 0
+        removed = False
         while j < len(stopWords):
             if wordArray[i] == stopWords[j]:
                 wordArray.pop(i)
+                removed = True
                 break
             else:
                 j += 1
-        i += 1
+                continue
+        if not removed:
+            i += 1
 
 # stemming
 # to check for other possible language remove #
@@ -56,10 +63,9 @@ while i < len(wordArray):
 stemTool = nltk.SnowballStemmer("english")
 
 i = 0
-resultArray = []
 while i < len(wordArray):
-    resultArray.append(str(stemTool.stem(wordArray[i])))
+    wordArray[i] = str(stemTool.stem(wordArray[i]))
     i += 1
 
 # print the result
-print resultArray
+print wordArray
