@@ -2,70 +2,82 @@ __author__ = 'peter'
 
 import nltk
 import re
+import os
 
-# todo for every file found in folder .\data\results
+
+def pre_process(path):
     # open a file
-    # path = r".\data\test.txt"
-    # txtFile = open(path, 'r')
+    __file = open(path, 'r')
 
     # read a file
-    # text = txtFile.read()
+    __text = __file.read()
 
     # close file descriptor
-    # txtFile.close()
+    __file.close()
 
-# just for testing
-text = "<html><body>TEST testing tests are, will Hello world...artist Nice!!</title><h1>new</h1></body></html>"
+    # remove html and xml tags
+    __text = re.sub("<.*?>", " ", __text)
 
-# remove html and xml tags
-text = re.sub("<.*?>", " ", text)
+    # define set of unnecessary characters
+    __chars_to_remove = ['.', ',', ';', ':', '!', '?', '$', '%', '*', '#', '<', '>', '(', ')', '[', ']', '{', '}']
+    __chars_to_remove.extend(['/', '\\' '\'', '"', '-', '_', '|', '&', '^', '\n'])
 
-# remove unnecessary characters
-chars_to_remove = ['.', ',', ';', ':', '!', '?', '$', '%', '*', '#', '<', '>', '(', ')', '[', ']', '{', '}', '/', '\\']
-chars_to_remove.extend(['\'', '"', '-', '_', '|', '&', '^'])
+    # remove unnecessary characters
+    __text = __text.translate(None, ''.join(__chars_to_remove))
 
-text = text.translate(None, ''.join(chars_to_remove))
+    # convert text to lower letters
+    __text = __text.lower()
 
-# convert text to lower letters
-text = text.lower()
+    # build bag of words
+    __wordArray = __text.split(" ")
 
-# build bag of words
-wordArray = text.split(" ")
+    # stopping
+    __stopWords = ["I", "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how"]
+    __stopWords.extend(["in", "is", "it", "la", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when"])
+    __stopWords.extend(["where", "who", "will", "with", "und", "the", "www"])
 
-# stopping
-stopWords = ["I", "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how", "in"]
-stopWords.extend(["is", "it", "la", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when", "where"])
-stopWords.extend(["who", "will", "with", "und", "the", "www"])
+    i = 0
+    while i < len(__wordArray):
+        # remove empty words
+        if __wordArray[i] == "":
+            __wordArray.pop(i)
+        # check for stop words
+        else:
+            j = 0
+            removed = False
+            while j < len(__stopWords):
+                if __wordArray[i] == __stopWords[j]:
+                    __wordArray.pop(i)
+                    removed = True
+                    break
+                else:
+                    j += 1
+                    continue
+            if not removed:
+                i += 1
 
-i = 0
-while i < len(wordArray):
-    # remove empty words
-    if wordArray[i] == "":
-        wordArray.pop(i)
-    # check for stop words
-    else:
-        j = 0
-        removed = False
-        while j < len(stopWords):
-            if wordArray[i] == stopWords[j]:
-                wordArray.pop(i)
-                removed = True
-                break
-            else:
-                j += 1
-                continue
-        if not removed:
-            i += 1
+    # stemming
+    # to check for other possible language remove #
+    # print(" ".join(SnowballStemmer.languages))
+    __stemmer = nltk.SnowballStemmer("english")
 
-# stemming
-# to check for other possible language remove #
-# print(" ".join(SnowballStemmer.languages))
-stemTool = nltk.SnowballStemmer("english")
+    i = 0
+    while i < len(__wordArray):
+        __wordArray[i] = str(__stemmer.stem(__wordArray[i]))
+        i += 1
 
-i = 0
-while i < len(wordArray):
-    wordArray[i] = str(stemTool.stem(wordArray[i]))
-    i += 1
+    return __wordArray
 
-# print the result
-print wordArray
+
+def main():
+    dirname = "../data/results/"
+
+    for filename in os.listdir(dirname):
+        # print the result
+        print filename + ":"
+        print pre_process(dirname + filename)
+
+    return
+
+# run pre processing for each file
+main()
