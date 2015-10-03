@@ -1,5 +1,6 @@
 import spider
 import argparse
+import urllib
 
 __author__ = 'mario'
 
@@ -12,7 +13,8 @@ artists_file = args.inputFile
 artists = open (artists_file, "r")
 
 for line in artists:
-    query = line.rstrip()
+    query = line.rstrip() +" music"
+    query = urllib.quote_plus(query)
 
     sp = spider.Spider()
     rs = sp.fetchLinks(query)
