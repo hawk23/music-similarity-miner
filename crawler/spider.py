@@ -18,13 +18,17 @@ class Spider(object):
 
         # fetch first page
         url = 'http://duckduckgo.com/html/?q=%s' % (query)
-        response = br.open(url)
-        links += self.parseLinks(response)
 
-        # invoke form to fetch second page
-        br.select_form(nr=2)
-        response = br.submit()
-        links += self.parseLinks(response)
+        try:
+            response = br.open(url)
+            links += self.parseLinks(response)
+
+            # invoke form to fetch second page
+            br.select_form(nr=2)
+            response = br.submit()
+            links += self.parseLinks(response)
+        except:
+            pass
 
         return links
 
