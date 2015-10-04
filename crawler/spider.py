@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import re
 import mechanize
-import urllib
 
 __author__ = 'mario'
 
@@ -40,19 +39,3 @@ class Spider(object):
             links.append(i.a['href'])
 
         return links
-
-    '''
-    Downloads all files given in 'urls' and concatenates them into one single output file.
-    '''
-    def download(slef, urls, out_file):
-        myfile = open(out_file, "w")
-
-        for url in urls:
-            try:
-                response = urllib.urlopen(url)
-                html = response.read()
-                myfile.write(html)
-            except:
-                pass
-
-        myfile.close()
