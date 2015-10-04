@@ -6,6 +6,8 @@ import time
 
 __author__ = 'mario'
 
+start_time = time.time()
+
 parser = argparse.ArgumentParser()
 parser.add_argument("inputFile")
 parser.add_argument("outputDir")
@@ -26,6 +28,8 @@ for line in artists:
     rs = sp.fetchLinks(query)
 
     print 'fetched %s links for %s' % (len(rs), query)
+    if len(rs) == 0:
+        print '[WARN] no links fetched for %s' % (query)
 
     out_file_name = line.rstrip()
     # only allow alphanumerric chars and spaces in filenames
@@ -43,3 +47,10 @@ for line in artists:
 # wait for all threads to finish
 for thread in threads:
     thread.join()
+
+end_time = time.time()
+elapsed = end_time - start_time
+minutes = int(elapsed / 60)
+seconds = int(elapsed % 60)
+
+print "--- execution time: %sm%ss---" % (minutes, seconds)

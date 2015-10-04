@@ -13,14 +13,14 @@ class DownloaderTask(threading.Thread):
         self.out_file = out_file
 
     def run(self):
-        print "download thread for %s started: %s" % (self.out_file, self.getName())
+        print "started thread for %s: %s" % (self.out_file, self.getName())
         threadLimiter.acquire()
         try:
             self.download(self.urls, self.out_file)
         finally:
             threadLimiter.release()
 
-        print "download thread for %s finished: %s" % (self.out_file, self.getName())
+        print "finished thread for %s: %s" % (self.out_file, self.getName())
 
     '''
     Downloads all files given in 'urls' and concatenates them into one single output file.
@@ -36,5 +36,4 @@ class DownloaderTask(threading.Thread):
             except:
                 pass
 
-        print 'saved to ' + out_file
         myfile.close()
