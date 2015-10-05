@@ -8,7 +8,7 @@ import nltk
 import re
 import os
 
-threadLimiter = threading.BoundedSemaphore(2)
+threadLimiter = threading.BoundedSemaphore(30)
 lock = threading.RLock()
 
 artistsWithTerms = {}
@@ -19,7 +19,7 @@ class Preprocessing(threading.Thread):
     def getArtistsWithTerms():
         return artistsWithTerms
 
-    #Removing stopwords. Takes list of words, outputs list of words.
+    # Removing stopwords. Takes list of words, outputs list of words.
     def remove_stopwords(self, l_words, lang='english'):
         l_stopwords = stopwords.words(lang)
         content = [w for w in l_words if w.lower() not in l_stopwords]
@@ -31,7 +31,7 @@ class Preprocessing(threading.Thread):
 
     def run(self):
         splits = self.path.split(os.sep)
-        artist = splits[len(splits)-1]
+        artist = splits[len(splits)-1][:-4]
 
         threadLimiter.acquire()
         print "started thread for %s: %s" % (artist, self.getName())
@@ -45,14 +45,13 @@ class Preprocessing(threading.Thread):
         finally:
             threadLimiter.release()
 
-        if wordArray is not None:
-            lock.acquire()
-            try:
-                artistsWithTerms[artist] = wordArray
-            except Exception as ex:
-                traceback.print_exc()
-            finally:
-                lock.release()
+        lock.acquire()
+        try:
+            artistsWithTerms[artist] = wordArray
+        except Exception as ex:
+            traceback.print_exc()
+        finally:
+            lock.release()
         print "finished thread for %s: %s" % (artist, self.getName())
 
     def pre_process(self, path):
@@ -85,7 +84,7 @@ class Preprocessing(threading.Thread):
         __wordArray = filter(lambda a: a != '', __wordArray)
 
         # stopping
-        __stopWords = ["I", "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how", ""]
+        __stopWords = ["I", "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how"]
         __stopWords.extend(["in", "is", "it", "la", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when"])
         __stopWords.extend(["where", "who", "will", "with", "und", "the", "www"])
 
