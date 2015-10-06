@@ -76,23 +76,27 @@ except Exception as e:
 # use cosine and jaccard similarity measure
 similarityMeasurer = similarityMeasurer.SimilarityMeasurer()
 similarity = {}
+
+artistsHandled = []
 try:
     for artist1 in artistsWithTermsWeight.keys():
         for artist2 in artistsWithTermsWeight.keys():
+            if artist2 not in artistsHandled:
+                if (artist1 == artist2):
+                    res = 0
+                else:
+                    res = similarityMeasurer.cosine_measure(artistsWithTermsWeight[artist1], artistsWithTermsWeight[artist2])
 
-            if (artist1 == artist2):
-                res = 0
-            else:
-                res = similarityMeasurer.jaccard_measure(artistsWithTermsWeight[artist1], artistsWithTermsWeight[artist2])
+                if artist1 not in similarity:
+                    similarity[artist1] = {}
+                if artist2 not in similarity:
+                    similarity[artist2] = {}
 
-            if artist1 not in similarity:
-                similarity[artist1] = {}
-            if artist2 not in similarity:
-                similarity[artist2] = {}
+                # save in similarity matrix
+                similarity[artist1][artist2] = res
+                similarity[artist2][artist1] = res
 
-            # save in similarity matrix
-            similarity[artist1][artist2] = res
-            similarity[artist2][artist1] = res
+        artistsHandled.append(artist1)
 
 except Exception as e:
     traceback.print_exc()

@@ -17,7 +17,7 @@ class SimilarityMeasurer(object):
         similarity = 0
         for i in terms1.keys():
             if i in terms2.keys():
-                 similarity += (terms1[i] * terms2[i])
+                similarity += (terms1[i] * terms2[i])
 
         # cosine normalization
         similarity /= len(terms1)*len(terms2)
