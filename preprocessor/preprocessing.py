@@ -8,13 +8,13 @@ import nltk
 import re
 import os
 
-threadLimiter = threading.BoundedSemaphore(30)
+threadLimiter = threading.BoundedSemaphore(5)
 lock = threading.RLock()
 
 artistsWithTerms = {}
 
-class Preprocessing(threading.Thread):
 
+class Preprocessing(threading.Thread):
     @staticmethod
     def getArtistsWithTerms():
         return artistsWithTerms
@@ -31,10 +31,10 @@ class Preprocessing(threading.Thread):
 
     def run(self):
         splits = self.path.split(os.sep)
-        artist = splits[len(splits)-1][:-4]
+        artist = splits[len(splits) - 1][:-4]
 
         threadLimiter.acquire()
-        print "started thread for %s: %s" % (artist, self.getName())
+        print "started preprocessing for %s: %s" % (artist, self.getName())
 
         wordArray = []
         try:
@@ -52,7 +52,7 @@ class Preprocessing(threading.Thread):
             traceback.print_exc()
         finally:
             lock.release()
-        print "finished thread for %s: %s" % (artist, self.getName())
+        print "finished preprocessing for %s: %s" % (artist, self.getName())
 
     def pre_process(self, path):
         # open a file
@@ -84,9 +84,9 @@ class Preprocessing(threading.Thread):
         __wordArray = filter(lambda a: a != '', __wordArray)
 
         # stopping
-        __stopWords = ["I", "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how"]
-        __stopWords.extend(["in", "is", "it", "la", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when"])
-        __stopWords.extend(["where", "who", "will", "with", "und", "the", "www"])
+        # __stopWords = ["I", "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how"]
+        # __stopWords.extend(["in", "is", "it", "la", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when"])
+        # __stopWords.extend(["where", "who", "will", "with", "und", "the", "www"])
 
         __wordArray = self.remove_stopwords(__wordArray, 'english')
 
@@ -101,6 +101,7 @@ class Preprocessing(threading.Thread):
                 __wordArray[i] = str(__stemmer.stem(__wordArray[i]))
                 i += 1
 
+            # TODO fix
             except UnicodeDecodeError:
                 i += 1
 

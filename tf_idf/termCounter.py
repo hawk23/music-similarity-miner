@@ -5,14 +5,13 @@ import traceback
 
 __author__ = 'veren_000'
 
-
 threadLimiter = threading.BoundedSemaphore(20)
 lock = threading.RLock()
 
 artistsWithTermsCount = {}
 
-class TermCounter(threading.Thread):
 
+class TermCounter(threading.Thread):
     @staticmethod
     def getArtistsWithTermsCount():
         return artistsWithTermsCount
@@ -56,5 +55,3 @@ class TermCounter(threading.Thread):
 
         print "finished counting for %s %s" % (self.artist, self.getName())
         threadLimiter.release()
-
-
