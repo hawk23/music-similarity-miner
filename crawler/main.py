@@ -41,8 +41,8 @@ for line in artists:
     threads.append(thread)
     thread.start()
 
-    # wait for a sec to avoid being blocked by searchengine's bot detection
-    time.sleep(1)
+    # wait for 2 sec to avoid being blocked by searchengine's bot detection
+    time.sleep(2)
 
 # wait for all threads to finish
 for thread in threads:
