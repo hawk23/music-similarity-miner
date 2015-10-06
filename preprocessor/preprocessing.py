@@ -8,7 +8,7 @@ import nltk
 import re
 import os
 
-threadLimiter = threading.BoundedSemaphore(5)
+threadLimiter = threading.BoundedSemaphore(8)
 lock = threading.RLock()
 
 artistsWithTerms = {}
@@ -25,7 +25,7 @@ class Preprocessing(threading.Thread):
         content = [w for w in l_words if w.lower() not in l_stopwords]
         return content
 
-    def __init__(self, path):
+    def __init__(self, path=''):
         threading.Thread.__init__(self)
         self.path = path
 

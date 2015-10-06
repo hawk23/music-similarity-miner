@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import traceback
 import time
@@ -29,12 +30,12 @@ def preprocess(resultsDir):
         traceback.print_exc()
 
 
-def countTerms(artistsWithTerms):
+def countTerms(termIndex, artistsWithTerms):
     try:
         threads = []
         for artist in artistsWithTerms.keys():
 
-            thread = termCounter.TermCounter(artist, artistsWithTerms)
+            thread = termCounter.TermCounter(artist, termIndex, artistsWithTerms)
             threads.append(thread)
             thread.start()
 
@@ -79,8 +80,9 @@ def measureSimilarity(similarityFunction, artistsWithTermsWeight):
         for artist1 in artistsWithTermsWeight.keys():
             for artist2 in artistsWithTermsWeight.keys():
                 if artist2 not in artistsHandled:
+
                     if (artist1 == artist2):
-                        res = 0
+                        res = 1
                     else:
 
                         # calls the function of similarityMeasurer depending on the input arg weightFunction
@@ -107,31 +109,43 @@ def main():
     start_time = time.time()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('resultsDir')
+    parser.add_argument('dataDir')
 
     # optional arguments
     parser.add_argument('weightFunction', nargs='?', default='standard_tf_idf')
     parser.add_argument('similarityFunction', nargs='?', default='jaccard_measure')
 
     args = parser.parse_args()
-    resultsDir = args.resultsDir
-    weightFunction = args.weightFunction
-    similarityFunction = args.similarityFunction
+    results_dir = args.dataDir + os.sep + 'results'
+    index_terms_file = args.dataDir + os.sep + 'index-terms' + os.sep + 'index-terms.txt'
+    similarities_dir = args.dataDir + os.sep + 'similarities' + os.sep
 
-    preprocess(resultsDir)
+    # preprocess artists
+    preprocess(results_dir)
     artistsWithTerms = preprocessing.Preprocessing.getArtistsWithTerms()
 
-    # count terms for every artist
-    countTerms(artistsWithTerms)
+    # preprocess terms
+    prep = preprocessing.Preprocessing()
+    termIndex = prep.pre_process(index_terms_file)
+
+    # count terms contained in the termIndex for every artist
+    countTerms(termIndex, artistsWithTerms)
     artistsWithTermsCount = termCounter.TermCounter.getArtistsWithTermsCount()
 
-    N = len(os.listdir(resultsDir))
+    counts_file = open(similarities_dir + os.sep + 'counts', 'w+')
+    json.dump(artistsWithTermsCount, counts_file)
+    counts_file.close()
 
     # weight the terms using tf_idf
-    artistsWithTermsWeight = weightTerms(N, weightFunction, artistsWithTermsCount)
+    N = len(os.listdir(results_dir))
+    artistsWithTermsWeight = weightTerms(N, args.weightFunction, artistsWithTermsCount)
+
+    weights_file = open(similarities_dir + os.sep + 'weights', 'w+')
+    json.dump(artistsWithTermsWeight, weights_file)
+    weights_file.close()
 
     # measure similarity for each pair of artists
-    similarityMatrix = measureSimilarity(similarityFunction, artistsWithTermsWeight)
+    similarityMatrix = measureSimilarity(args.similarityFunction, artistsWithTermsWeight)
 
     print similarityMatrix
 
@@ -142,6 +156,9 @@ def main():
 
     print "--- execution time for %s artists: %sm%ss--- (for 1200 artists: %s min.)" % (N, minutes, seconds, str((float(1200/N)) * elapsed/60))
 
+    similarity_file = open(similarities_dir + os.sep + 'similarities', 'w+')
+    json.dump(similarityMatrix, similarity_file)
+    similarity_file.close()
 
 if __name__ == "__main__":
     main()

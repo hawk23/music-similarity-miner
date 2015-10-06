@@ -11,16 +11,12 @@ class SimilarityMeasurer(object):
         :return: cosine measure for the similarity
         '''
 
-        if len(terms1) == 0 or len(terms2) == 0:
-            return math.inf
-
-        similarity = 0
+        similarity = 0.0
         for i in terms1.keys():
-            if i in terms2.keys():
-                similarity += (terms1[i] * terms2[i])
+            similarity += (terms1[i] * terms2[i])
 
         # cosine normalization
-        similarity /= len(terms1) * len(terms2)
+        similarity /= (len(terms1) * len(terms2))
         return similarity
 
     def jaccard_measure(self, terms1, terms2):
@@ -30,13 +26,9 @@ class SimilarityMeasurer(object):
         :return: jaccard measure for the similarity
         '''
 
-        if len(terms1) == 0 or len(terms2) == 0:
-            return math.inf
-
-        overlapping = 0
+        overlapping = 0.0
         for i in terms1.keys():
-            if i in terms2.keys():
-                overlapping += (terms1[i] * terms2[i])
+            overlapping += (terms1[i] * terms2[i])
 
         similarity = overlapping / (len(terms1) ** 2 + len(terms2) ** 2 - overlapping)
 

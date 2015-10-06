@@ -5,7 +5,7 @@ import traceback
 
 __author__ = 'veren_000'
 
-threadLimiter = threading.BoundedSemaphore(20)
+threadLimiter = threading.BoundedSemaphore(8)
 lock = threading.RLock()
 
 artistsWithTermsCount = {}
@@ -20,13 +20,14 @@ class TermCounter(threading.Thread):
     def countDocumentsContainingTerm(term):
         count = 0
         for artist in artistsWithTermsCount.keys():
-            if term in artistsWithTermsCount[artist]:
+            if term in artistsWithTermsCount[artist] and artistsWithTermsCount[artist][term] > 0:
                 count += 1
         return count
 
-    def __init__(self, artist, artistsWithTerms):
+    def __init__(self, artist, termIndex, artistsWithTerms):
         threading.Thread.__init__(self)
         self.artist = artist
+        self.termIndex = termIndex
         self.artistsWithTerms = artistsWithTerms
 
     def run(self):
@@ -41,7 +42,7 @@ class TermCounter(threading.Thread):
         counter = Counter(self.artistsWithTerms[self.artist])
 
         termCountDict = {}
-        for term in self.artistsWithTerms[self.artist]:
+        for term in self.termIndex:
             if term not in termCountDict:
                 termCountDict[term] = counter[term]
 
