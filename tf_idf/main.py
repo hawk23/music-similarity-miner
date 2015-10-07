@@ -7,7 +7,7 @@ import similarity_measurer
 from tf_idf import term_counter
 import weight_measurer
 from preprocessor import preprocessing
-
+# test_commit
 __author__ = 'veren_000'
 
 similarity_measurer = similarity_measurer.SimilarityMeasurer()
