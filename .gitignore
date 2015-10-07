@@ -60,3 +60,4 @@ target/
 # idea
 .idea/*
 data/results/*.txt
+data/results-full/*
