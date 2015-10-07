@@ -1,6 +1,7 @@
 import threading
 import traceback
 from nltk.corpus import stopwords
+from BeautifulSoup import BeautifulSoup
 
 __author__ = 'peter'
 
@@ -22,7 +23,7 @@ class Preprocessing(threading.Thread):
     # Removing stopwords. Takes list of words, outputs list of words.
     def remove_stopwords(self, l_words, lang='english'):
         l_stopwords = stopwords.words(lang)
-        content = [w for w in l_words if w.lower() not in l_stopwords]
+        content = [w for w in l_words if w not in l_stopwords]
         return content
 
     def __init__(self, path=''):
@@ -59,13 +60,17 @@ class Preprocessing(threading.Thread):
         __file = open(path, 'r')
 
         # read a file
-        __text = __file.read()
+        __raw_html = __file.read()
 
         # close file descriptor
         __file.close()
 
         # remove html and xml tags
-        __text = re.sub("<.*?>", " ", __text)
+        __soup = BeautifulSoup(__raw_html)
+        __text = __soup.text
+
+        # remove html tags using regular expressions
+        # __text = re.sub("<.*?>", " ", __text)
 
         # define set of unnecessary characters
         __chars_to_remove = ['.', ',', ';', ':', '!', '?', '$', '%', '*', '#', '<', '>', '(', ')', '[', ']', '{', '}']
@@ -84,9 +89,9 @@ class Preprocessing(threading.Thread):
         __wordArray = filter(lambda a: a != '', __wordArray)
 
         # stopping
-        # __stopWords = ["I", "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how"]
-        # __stopWords.extend(["in", "is", "it", "la", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when"])
-        # __stopWords.extend(["where", "who", "will", "with", "und", "the", "www"])
+        # _stopWords = ["I", "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how"]
+        # _stopWords.extend(["in", "is", "it", "la", "of", "on", "or", "that", "the", "this", "to", "was", "what"])
+        # _stopWords.extend(["when", "where", "who", "will", "with", "und", "the", "www"])
 
         __wordArray = self.remove_stopwords(__wordArray, 'english')
 
