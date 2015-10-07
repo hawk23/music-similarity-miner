@@ -6,7 +6,7 @@ __author__ = 'veren_000'
 class WeightMeasurer(object):
     def standard_tf_idf(self, f_dt, n, f_t):
         '''
-        :param f_dt: number of occurences of term t in document d (e.g. term "music" for artist Rihanna)
+        :param f_dt: number of occurences of term t in document d
         :param n: number of documents (=artists)
         :param f_t: number of documents containing term t
         :return: standard tf_idf (TF_C * IDF_B2)
@@ -23,7 +23,7 @@ class WeightMeasurer(object):
 
     def alternative_tf_idf(self, f_dt, n, f_t):
         '''
-        :param f_dt: number of occurences of term t in document d (e.g. term "music" for artist Rihanna)
+        :param f_dt: number of occurences of term t in document d
         :param n: number of documents (=artists)
         :param f_t: number of documents containing term t
         :return: alternative tf_idf (TF_C2 * IDF_E)

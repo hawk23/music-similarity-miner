@@ -132,6 +132,9 @@ def main():
     count_terms(term_index, artists_with_terms)
     artists_with_terms_count = term_counter.TermCounter.get_artists_with_terms_count()
 
+    if not os.path.exists(similarities_dir):
+        os.makedirs(similarities_dir)
+
     counts_file = open(similarities_dir + os.sep + 'counts', 'w+')
     json.dump(artists_with_terms_count, counts_file)
     counts_file.close()
