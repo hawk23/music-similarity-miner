@@ -13,11 +13,11 @@ artistsWithTermsCount = {}
 
 class TermCounter(threading.Thread):
     @staticmethod
-    def getArtistsWithTermsCount():
+    def get_artists_with_terms_count():
         return artistsWithTermsCount
 
     @staticmethod
-    def countDocumentsContainingTerm(term):
+    def count_documents_containing_term(term):
         count = 0
         for artist in artistsWithTermsCount.keys():
             if term in artistsWithTermsCount[artist] and artistsWithTermsCount[artist][term] > 0:

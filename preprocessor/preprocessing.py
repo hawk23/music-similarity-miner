@@ -11,13 +11,13 @@ import os
 threadLimiter = threading.BoundedSemaphore(8)
 lock = threading.RLock()
 
-artistsWithTerms = {}
+artists_with_terms = {}
 
 
 class Preprocessing(threading.Thread):
     @staticmethod
-    def getArtistsWithTerms():
-        return artistsWithTerms
+    def get_artists_with_terms():
+        return artists_with_terms
 
     # Removing stopwords. Takes list of words, outputs list of words.
     def remove_stopwords(self, l_words, lang='english'):
@@ -47,7 +47,7 @@ class Preprocessing(threading.Thread):
 
         lock.acquire()
         try:
-            artistsWithTerms[artist] = wordArray
+            artists_with_terms[artist] = wordArray
         except Exception as ex:
             traceback.print_exc()
         finally:
