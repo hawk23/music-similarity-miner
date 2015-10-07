@@ -7,7 +7,7 @@ import similarity_measurer
 from tf_idf import term_counter
 import weight_measurer
 from preprocessor import preprocessing
-
+# test_commit
 __author__ = 'veren_000'
 
 similarity_measurer = similarity_measurer.SimilarityMeasurer()
@@ -131,6 +131,9 @@ def main():
     # count terms contained in the termIndex for every artist
     count_terms(term_index, artists_with_terms)
     artists_with_terms_count = term_counter.TermCounter.get_artists_with_terms_count()
+
+    if not os.path.exists(similarities_dir):
+        os.makedirs(similarities_dir)
 
     counts_file = open(similarities_dir + os.sep + 'counts', 'w+')
     json.dump(artists_with_terms_count, counts_file)

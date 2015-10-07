@@ -8,27 +8,27 @@ __author__ = 'veren_000'
 threadLimiter = threading.BoundedSemaphore(8)
 lock = threading.RLock()
 
-artistsWithTermsCount = {}
+artists_with_terms_count = {}
 
 
 class TermCounter(threading.Thread):
     @staticmethod
     def get_artists_with_terms_count():
-        return artistsWithTermsCount
+        return artists_with_terms_count
 
     @staticmethod
     def count_documents_containing_term(term):
         count = 0
-        for artist in artistsWithTermsCount.keys():
-            if term in artistsWithTermsCount[artist] and artistsWithTermsCount[artist][term] > 0:
+        for artist in artists_with_terms_count.keys():
+            if term in artists_with_terms_count[artist] and artists_with_terms_count[artist][term] > 0:
                 count += 1
         return count
 
-    def __init__(self, artist, termIndex, artistsWithTerms):
+    def __init__(self, artist, term_index, artists_with_terms):
         threading.Thread.__init__(self)
         self.artist = artist
-        self.termIndex = termIndex
-        self.artistsWithTerms = artistsWithTerms
+        self.term_index = term_index
+        self.artists_with_terms = artists_with_terms
 
     def run(self):
         '''
@@ -39,16 +39,16 @@ class TermCounter(threading.Thread):
         print "started counting for %s %s" % (self.artist, self.getName())
 
         # use counter for better performance
-        counter = Counter(self.artistsWithTerms[self.artist])
+        counter = Counter(self.artists_with_terms[self.artist])
 
         termCountDict = {}
-        for term in self.termIndex:
+        for term in self.term_index:
             if term not in termCountDict:
                 termCountDict[term] = counter[term]
 
         lock.acquire()
         try:
-            artistsWithTermsCount[self.artist] = termCountDict
+            artists_with_terms_count[self.artist] = termCountDict
         except Exception as ex:
             traceback.print_exc()
         finally:
