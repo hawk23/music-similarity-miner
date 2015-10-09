@@ -1,9 +1,0 @@
-<html>
-<title>This is a test document</title>
-<body>
-<h1>TEST</h1>
-testing tests are, will Hello world...artist Nice!!
-Haus Maus raus: Daher NICE??
-<h1>new</h1>
-</body>
-</html>

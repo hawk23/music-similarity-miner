@@ -35,7 +35,6 @@ class Preprocessing(threading.Thread):
         artist = splits[len(splits) - 1][:-4]
 
         threadLimiter.acquire()
-        print "started preprocessing for %s: %s" % (artist, self.getName())
 
         wordArray = []
         try:
@@ -53,7 +52,6 @@ class Preprocessing(threading.Thread):
             traceback.print_exc()
         finally:
             lock.release()
-        print "finished preprocessing for %s: %s" % (artist, self.getName())
 
     def pre_process(self, path):
         # open a file
@@ -77,7 +75,7 @@ class Preprocessing(threading.Thread):
         __chars_to_remove.extend(['/', '\\' '\'', '"', '-', '_', '|', '&', '^', '\n', '=', '~', '\t', '\r'])
 
         # remove unnecessary characters
-        __text = __text.translate(None, ''.join(__chars_to_remove))
+        __text = __text.encode('utf-8').translate(None, ''.join(__chars_to_remove))
 
         # convert text to lower letters
         __text = __text.lower()
@@ -101,6 +99,7 @@ class Preprocessing(threading.Thread):
         __stemmer = nltk.SnowballStemmer("english")
 
         i = 0
+        unicodeErrors = 0
         while i < len(__wordArray):
             try:
                 __wordArray[i] = str(__stemmer.stem(__wordArray[i]))
@@ -108,6 +107,7 @@ class Preprocessing(threading.Thread):
 
             # TODO fix
             except UnicodeDecodeError:
+                unicodeErrors+=1
                 i += 1
-
+        print "%s UnicodeDecodeErrors" % (unicodeErrors)
         return __wordArray

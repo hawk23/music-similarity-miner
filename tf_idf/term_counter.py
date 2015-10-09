@@ -36,7 +36,6 @@ class TermCounter(threading.Thread):
         :return:
         '''
         threadLimiter.acquire()
-        print "started counting for %s %s" % (self.artist, self.getName())
 
         # use counter for better performance
         counter = Counter(self.artists_with_terms[self.artist])
@@ -54,5 +53,4 @@ class TermCounter(threading.Thread):
         finally:
             lock.release()
 
-        print "finished counting for %s %s" % (self.artist, self.getName())
         threadLimiter.release()

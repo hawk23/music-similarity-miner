@@ -29,11 +29,12 @@ class WeightMeasurer(object):
         :return: alternative tf_idf (TF_C2 * IDF_E)
         '''
 
-        # adjustments to avoid division by 0/ a negative result
+        # do not compute tf_idf if division / log by zero
         if f_t == 0:
-            f_t = 1.0
-        elif f_t > n / 2.0:
-            return 0.0
+            return 0
+        if n == f_t:
+            f_t -= 1
 
+        # tf_idf (TF_C2 and IDF_E) formula
         tf_idf = (math.log(1.0 + float(f_dt))) * math.log((n - f_t) / float(f_t))
         return tf_idf
