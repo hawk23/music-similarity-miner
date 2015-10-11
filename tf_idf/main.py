@@ -10,7 +10,7 @@ from preprocessor import preprocessing
 __author__ = 'veren_000'
 
 weight_measurer = weight_measurer.WeightMeasurer()
-
+similarity_measurer = similarity_measurer.SimilarityMeasurer()
 
 def preprocess(results_dir):
     try:
@@ -68,31 +68,36 @@ def weight_terms(N, weight_function, artists_with_terms_count):
 
     return artists_with_terms_weight
 
-
 def measure_similarity(similarity_function, artists_with_terms_weight):
+    similarity = {}
     artists_handled = []
-    threads = []
 
     try:
         for artist1 in artists_with_terms_weight.keys():
             for artist2 in artists_with_terms_weight.keys():
                 if artist2 not in artists_handled:
 
-                        # start thread for computing the similarity between artist1 and artist2
-                        thread = similarity_measurer.SimilarityMeasurer(artist1, artist2, artists_with_terms_weight[artist1], artists_with_terms_weight[artist2], similarity_function)
-                        threads.append(thread)
-                        thread.start()
+                    if (artist1 == artist2):
+                        res = 1
+                    else:
 
-            # add to handled artists in order to avoid handling this pair again
+                        # calls the function of similarityMeasurer depending on the input arg weightFunction
+                        res = getattr(similarity_measurer, similarity_function)(artists_with_terms_weight[artist1], artists_with_terms_weight[artist2])
+
+                    if artist1 not in similarity:
+                        similarity[artist1] = {}
+                    if artist2 not in similarity:
+                        similarity[artist2] = {}
+
+                    # save in similarity matrix
+                    similarity[artist1][artist2] = res
+                    similarity[artist2][artist1] = res
+
             artists_handled.append(artist1)
 
-        # wait until threads are finished
-        for thread in threads:
-            thread.join()
     except Exception as e:
         traceback.print_exc()
 
-    similarity = similarity_measurer.SimilarityMeasurer.getSimilarity()
     return similarity
 
 
@@ -100,9 +105,9 @@ def main():
     start_time = time.time()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('data_dir')
 
     # optional arguments
+    parser.add_argument('data_dir', nargs='?', default='..' + os.sep + 'data')
     parser.add_argument('weight_function', nargs='?', default='standard_tf_idf')
     parser.add_argument('similarity_function', nargs='?', default='jaccard_measure')
 

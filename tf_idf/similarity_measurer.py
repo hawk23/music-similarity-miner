@@ -1,56 +1,11 @@
 import threading
 import traceback
+import math
+import scipy.spatial.distance as scidist      # import distance computation module from scipy package
 
 __author__ = 'veren_000'
 
-# max threads
-threadLimiter = threading.BoundedSemaphore(8)
-lock = threading.RLock()
-
-similarity = {}
-
-
 class SimilarityMeasurer(threading.Thread):
-
-    @staticmethod
-    def getSimilarity():
-        return similarity
-
-    def __init__(self, artist1, artist2, terms_weight1, terms_weight2, similarity_function):
-        threading.Thread.__init__(self)
-        self.artist1 = artist1
-        self.artist2 = artist2
-        self.terms_weight1 = terms_weight1
-        self.terms_weight2 = terms_weight2
-        self.similarity_function = similarity_function
-    
-    def run(self):
-
-        threadLimiter.acquire()
-
-        try:
-            if (self.artist1 == self.artist2):
-                res = 1
-            else:
-                # calls the function of similarityMeasurer depending on the input arg weightFunction
-                res = getattr(self, self.similarity_function)(self.terms_weight1, self.terms_weight2)
-
-            # lock similarity and save in similarity matrix
-            lock.acquire()
-            if self.artist1 not in similarity:
-                similarity[self.artist1] = {}
-            if self.artist2 not in similarity:
-                similarity[self.artist2] = {}
-
-            similarity[self.artist1][self.artist2] = res
-            similarity[self.artist2][self.artist1] = res
-        except Exception as ex:
-            traceback.print_exc()
-        finally:
-            lock.release()
-
-        threadLimiter.release()
-
 
     def cosine_measure(self, terms1, terms2):
         '''
@@ -59,16 +14,26 @@ class SimilarityMeasurer(threading.Thread):
         :return: cosine measure for the similarity
         '''
 
+        norm1 = 0.0
+        norm2 = 0.0
         similarity = 0.0
         for i in terms1.keys():
             similarity += (terms1[i] * terms2[i])
+            norm1 += terms1[i] ** 2
+            norm2 += terms2[i] ** 2
 
         # cosine normalization
-        similarity /= (len(terms1) * len(terms2))
+        normalization = math.sqrt(norm1) * math.sqrt(norm2)
 
-        print "My: " + similarity
-        # print "Cosine" + scidist.cosine(terms1, terms2)
+        # to avoid division by 0
+        if (normalization == 0):
+            return 0
+
+        similarity /= normalization
+
         return similarity
+
+
 
     def jaccard_measure(self, terms1, terms2):
         '''
@@ -77,10 +42,31 @@ class SimilarityMeasurer(threading.Thread):
         :return: jaccard measure for the similarity
         '''
 
+        norm1 = 0.0
+        norm2 = 0.0
         overlapping = 0.0
-        for i in terms1.keys():
-            overlapping += (terms1[i] * terms2[i])
 
-        similarity = overlapping / (len(terms1) ** 2 + len(terms2) ** 2 - overlapping)
+        for i in terms1.keys():
+            # if both terms are not 0 then add to intersection and union
+            if (terms1[i] != 0 and terms2[i] != 0):
+                overlapping += terms1[i]**2 + terms2[i]**2
+                norm1 += terms1[i]**2
+                norm2 += terms2[i]**2
+            # else add only to the corresponding normalization vector
+            elif (terms1[i] != 0):
+                norm1 += terms1[i]**2
+            elif (terms2[i] != 0):
+                norm2 += terms2[i]**2
+
+        # intersection
+        overlapping = math.sqrt(overlapping)
+
+        # union
+        norm = math.sqrt(norm1 + norm2)
+
+        # to avoid division by 0
+        if (norm == 0):
+            return 0
+        similarity = overlapping / norm
 
         return similarity

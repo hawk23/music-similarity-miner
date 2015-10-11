@@ -5,7 +5,7 @@ import traceback
 
 __author__ = 'veren_000'
 
-threadLimiter = threading.BoundedSemaphore(8)
+threadLimiter = threading.BoundedSemaphore(4)
 lock = threading.RLock()
 
 artists_with_terms_count = {}
@@ -42,8 +42,7 @@ class TermCounter(threading.Thread):
 
         termCountDict = {}
         for term in self.term_index:
-            if term not in termCountDict:
-                termCountDict[term] = counter[term]
+            termCountDict[term] = counter[term]
 
         lock.acquire()
         try:
