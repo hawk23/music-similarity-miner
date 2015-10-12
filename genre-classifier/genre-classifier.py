@@ -36,6 +36,7 @@ def main():
     # get the n most similar artist for the given artist
     result_genre = knearestclass(sorted_list[:k])
 
+    print("%s most similar artists: %s" % (k,sorted_list[:k]))
     print("predicted genre: %s, correct genre: %s" % (result_genre, getGenre(artist)))
 
 def knearestclass(list):
