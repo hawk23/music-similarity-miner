@@ -31,10 +31,8 @@ class WeightMeasurer(object):
 
         # do not compute tf_idf if division / log by zero
         if f_t == 0:
-            return 0
-        if n == f_t:
-            f_t -= 1
+            return 0.0
 
-        # tf_idf (TF_C2 and IDF_E) formula
-        tf_idf = (math.log(1.0 + float(f_dt))) * math.log((n - f_t) / float(f_t))
+        # tf_idf (TF_C2 and IDF_C) formula
+        tf_idf = (math.log(1.0 + float(f_dt))) * (1 / float(f_t))
         return tf_idf

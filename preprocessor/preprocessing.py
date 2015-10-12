@@ -1,12 +1,8 @@
 import threading
 import traceback
-from nltk.corpus import stopwords
-from BeautifulSoup import BeautifulSoup
 
 __author__ = 'peter'
 
-import nltk
-import re
 import os
 
 # Stop words used by Google
