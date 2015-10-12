@@ -1,7 +1,5 @@
 import threading
-import traceback
 import math
-import scipy.spatial.distance as scidist      # import distance computation module from scipy package
 
 __author__ = 'veren_000'
 

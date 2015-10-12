@@ -2,7 +2,6 @@ import threading
 import traceback
 import os
 
-
 __author__ = 'peter'
 
 # Stop words used by Google
