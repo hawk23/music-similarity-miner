@@ -24,9 +24,9 @@ class WeightMeasurer(object):
     def alternative_tf_idf(self, f_dt, n, f_t):
         '''
         :param f_dt: number of occurences of term t in document d
-        :param n: number of documents (=artists)
+        :param n: number of documents (=artists) - not needed here
         :param f_t: number of documents containing term t
-        :return: alternative tf_idf (TF_C2 * IDF_E)
+        :return: alternative tf_idf (TF_C2 * IDF_C)
         '''
 
         # do not compute tf_idf if division / log by zero
