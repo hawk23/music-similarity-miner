@@ -47,20 +47,17 @@ class SimilarityMeasurer(threading.Thread):
         for i in terms1.keys():
             # if both terms are not 0 then add to intersection and union
             if (terms1[i] != 0 and terms2[i] != 0):
-                overlapping += terms1[i]**2 + terms2[i]**2
-                norm1 += terms1[i]**2
-                norm2 += terms2[i]**2
+                overlapping += 1
+                norm1 += 1
+                norm2 += 1
             # else add only to the corresponding normalization vector
             elif (terms1[i] != 0):
-                norm1 += terms1[i]**2
+                norm1 += 1
             elif (terms2[i] != 0):
-                norm2 += terms2[i]**2
-
-        # intersection
-        overlapping = math.sqrt(overlapping)
+                norm2 += 1
 
         # union
-        norm = math.sqrt(norm1 + norm2)
+        norm = norm1 + norm2
 
         # to avoid division by 0
         if (norm == 0):
